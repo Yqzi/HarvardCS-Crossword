@@ -1,6 +1,7 @@
 import sys
 
 from crossword import *
+import copy
 
 
 class CrosswordCreator():
@@ -99,18 +100,10 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        max_len = 0
-        min_len = float('inf')
-
-        for k in self.domains.keys():
-            max_len = max(max_len, k.length)
-            min_len = min(min_len, k.length)
-
         for v in self.domains:
-            for word in self.domains[v]:
-                if len(word) > max_len or len(word) < min_len:
-                    self.domains[v].remove(word)
-
+            remove = {word for word in self.domains[v] if v.length != len(word)}
+            self.domains[v] -= remove
+        
     def revise(self, x, y):
         """
         Make variable `x` arc consistent with variable `y`.
@@ -120,8 +113,22 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
-
+        (i, j) = self.crossword.overlaps[x, y]
+        if (i, j) == None:
+            return False
+        
+        remove_words = set()
+        
+        for word_x in self.domains[x]:
+            if not any(word_x[i] == word_y[j] for word_y in self.domains[y]):
+                remove_words.add(word_x)
+        
+        if len(remove_words) == 0:
+            return False
+        
+        self.domains[x] -= remove_words
+        return True
+        
     def ac3(self, arcs=None):
         """
         Update `self.domains` such that each variable is arc consistent.
