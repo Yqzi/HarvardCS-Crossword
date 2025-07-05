@@ -197,10 +197,9 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        h = heuristic_recursion(var, assignment, [])
-    
-    def heuristic_recursion(self, var, assignment, filters = []):
-        raise NotImplementedError
+        def heuristic_recursion(self, var, assignment, filters):
+        
+        h = heuristic_recursion(var, assignment, filters=None)
 
     def select_unassigned_variable(self, assignment):
         """
