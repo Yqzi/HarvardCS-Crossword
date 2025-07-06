@@ -199,9 +199,11 @@ class CrosswordCreator():
         """
         def heuristic_recursion(self, var, assignment, filters):
             len_domain = {word for word in self.domains[var] if var.length != len(word)}
+            h = {}
+            neighbors = self.crossword.neighbors(var)
             for word in len_domain - {assignment.values()}:
-                
-                
+                for neighbor in neighbors:
+                    
         
         h = heuristic_recursion(var, assignment, filters=None)
 
