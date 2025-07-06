@@ -198,6 +198,10 @@ class CrosswordCreator():
         that rules out the fewest values among the neighbors of `var`.
         """
         def heuristic_recursion(self, var, assignment, filters):
+            len_domain = {word for word in self.domains[var] if var.length != len(word)}
+            for word in len_domain - {assignment.values()}:
+                
+                
         
         h = heuristic_recursion(var, assignment, filters=None)
 
