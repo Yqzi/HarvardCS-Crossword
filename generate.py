@@ -203,7 +203,7 @@ class CrosswordCreator():
             neighbors = self.crossword.neighbors(var)
             for word in len_domain - {assignment.values()}:
                 for neighbor in neighbors:
-                    
+
         
         h = heuristic_recursion(var, assignment, filters=None)
 
