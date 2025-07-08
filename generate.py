@@ -197,21 +197,23 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        def heuristic_recursion(var, assignment, filters):
-            filtered_domain = {word for word in self.domains[var] if var.length != len(word)}
-            h = {}
+        def count_removed(v):
             n = 0
-            neighbors = self.crossword.neighbors(var)
-            for filter in filters:
-                if word[filter[1]] in filtered_domain != filters[filter]:
-                    filtered_domain.remove(word)
-                    n += 1
-            for word in filtered_domain - {assignment.values()}:
-                for neighbor in neighbors:
-                    (i, j) = self.crossword.overlaps[var, neighbor]
-                    h[heuristic_recursion(neighbor, assignment, {(i, j): word[i]})] = n
+            for neighbor in self.crossword.neighbors(var):
+                if neighbor in assignment:
+                    continue
+                overlap = self.crossword.overlaps[var, neighbor]
+                if overlap == None:
+                    continue
+                i, j = overlap
+                
+                for neighbor_domain in self.domains[neighbor]:
+                    if v[i] != neighbor_domain[j]:
+                        n += 1
+            return n
         
-        h = heuristic_recursion(var, assignment, filters=None)
+        filtered_domains = [word for word in self.domains[var] if len(word) == var.length]
+        return sorted(filtered_domains, key=count_removed)
 
     def select_unassigned_variable(self, assignment):
         """
