@@ -223,7 +223,32 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        raise NotImplementedError
+        variables = self.crossword.variables - {assignment}
+        if len(variables) == 1:
+            return variables[0]
+        h = {}
+        for var in variables:
+            domains = self.domains[var]
+            n = len(domains)
+            for d in domains:
+                if len(d) != var.length:
+                    domains.remove(d)
+                    n -= 1
+            for neighbor in self.crossword.neighbors(var):
+                overlap = self.crossword.overlaps[var, neighbor]
+                if overlap is None:
+                    continue
+                i, j = overlap
+                if neighbor in assignment:
+                    for d in domains:
+                        if d[i] != assignment[neighbor][j]:
+                            domains.remove(d)
+                            n -= 1
+            h[var] = n
+        
+        h = sorted(h, key=h.keys())
+
+
 
     def backtrack(self, assignment):
         """
