@@ -113,10 +113,11 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        (i, j) = self.crossword.overlaps[x, y]
-        if (i, j) == None:
+        overlap = self.crossword.overlaps[x, y]
+        if overlap == None:
             return False
-        
+        i, j = overlap
+
         remove_words = set()
         
         for word_x in self.domains[x]:
@@ -175,10 +176,11 @@ class CrosswordCreator():
         """
         queue = [(x, y) for x in assignment for y in self.crossword.neighbors(x) if y in assignment]
         for (x, y) in queue:
-            (i, j) = self.crossword.overlaps[x, y]
+            overlap = self.crossword.overlaps[x, y]
 
-            if (i, j) == None:
+            if overlap == None:
                 continue
+            i, j = overlap
 
             if assignment[x][i] != assignment[y][j]:
                 return False
@@ -223,31 +225,12 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        variables = self.crossword.variables - {assignment}
-        if len(variables) == 1:
-            return variables[0]
-        h = {}
-        for var in variables:
-            domains = self.domains[var]
-            n = len(domains)
-            for d in domains:
-                if len(d) != var.length:
-                    domains.remove(d)
-                    n -= 1
-            for neighbor in self.crossword.neighbors(var):
-                overlap = self.crossword.overlaps[var, neighbor]
-                if overlap is None:
-                    continue
-                i, j = overlap
-                if neighbor in assignment:
-                    for d in domains:
-                        if d[i] != assignment[neighbor][j]:
-                            domains.remove(d)
-                            n -= 1
-            h[var] = n
-        
-        h = sorted(h, key=h.keys())
+        vars = [v for v in self.crossword.variables if v not in assignment]
 
+        def var_sort_key(v):
+            return (len(self.domains[v]), -len(self.crossword.neighbors(v)))
+
+        return min(vars, key=var_sort_key)
 
 
     def backtrack(self, assignment):
@@ -259,7 +242,7 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        print('hohoh')
 
 
 def main():
