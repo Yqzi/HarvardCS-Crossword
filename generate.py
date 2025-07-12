@@ -242,8 +242,7 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        print('hohoh')
-
+        raise NotImplementedError
 
 def main():
 
